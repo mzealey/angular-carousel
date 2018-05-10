@@ -181,6 +181,9 @@
                     });
 
                     return function(scope, iElement, iAttributes, containerCtrl) {
+                        var rnCarouselOffset;
+                        if( iAttributes.rnCarouselOffset )
+                            rnCarouselOffset = $parse(iAttributes.rnCarouselOffset);
 
                         carouselId++;
 
@@ -251,6 +254,13 @@
                             // manually apply transformation to carousel childrens
                             // todo : optim : apply only to visible items
                             var x = scope.carouselBufferIndex * 100 + offset;
+
+                            // MZ: Allow client scope to see where we are in
+                            // the scene of things in case they want to do some
+                            // other action based on this.
+                            if( rnCarouselOffset )
+                                rnCarouselOffset(scope, { offset: offset });
+
                             angular.forEach(getSlidesDOM(), function(child, index) {
                                 child.style.cssText = createStyleString(computeCarouselSlideStyle(index, x, options.transitionType));
                             });
