@@ -461,10 +461,18 @@
                                             newValue = 0;
                                             updateParentIndex(newValue);
                                         }
-                                        if (!locked) {
+
+                                        // Always stay in sync with what the indexModel is doing immediately
+                                        if (iAttributes.rnCarouselIndexChangeNoAnimate) {
                                             goToSlide(newValue, {
-                                                animate: !init
+                                                animate: false,
                                             });
+                                        } else {
+                                            if (!locked) {
+                                                goToSlide(newValue, {
+                                                    animate: !init
+                                                });
+                                            }
                                         }
                                         init = false;
                                     }
