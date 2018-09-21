@@ -556,16 +556,18 @@
 
                                 destination = (scope.carouselIndex + moveOffset);
 
-                                goToSlide(destination);
                                 if(iAttributes.rnCarouselOnInfiniteScrollRight!==undefined && slidesMove === 0 && scope.carouselIndex !== 0) {
                                     $parse(iAttributes.rnCarouselOnInfiniteScrollRight)(scope)
-                                    goToSlide(0);
+                                    destination = 0;
                                 }
                                 if(iAttributes.rnCarouselOnInfiniteScrollLeft!==undefined && slidesMove === 0 && scope.carouselIndex === 0 && moveOffset === 0) {
                                     $parse(iAttributes.rnCarouselOnInfiniteScrollLeft)(scope)
-                                    goToSlide(currentSlides.length-1);
+                                    destination = currentSlides.length - 1;
                                 }
 
+                                goToSlide(destination);
+                                if(iAttributes.rnCarouselOnSwipe)
+                                    $parse(iAttributes.rnCarouselOnSwipe)(scope, { '$event': { destination: destination } })
                             } else {
                                 scope.$apply(function() {
                                     scope.carouselIndex = parseInt(-offset / 100, 10);
