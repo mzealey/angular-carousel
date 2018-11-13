@@ -262,8 +262,18 @@
                                 rnCarouselOffset(scope, { offset: offset });
 
                             angular.forEach(getSlidesDOM(), function(child, index) {
-                                child.style.cssText = createStyleString(computeCarouselSlideStyle(index, x, options.transitionType));
+                                var styles = computeCarouselSlideStyle(index, x, options.transitionType)
+                                if( !swipeMoved && options.transitionType == 'cssSlide' )
+                                    styles.transition = 'transform linear 200ms';
+
+                                child.style.cssText = createStyleString(styles);
                             });
+
+                            if( !swipeMoved && options.transitionType == 'cssSlide' ) {
+                                window.setTimeout(function() {
+                                    angular.forEach(getSlidesDOM(), function(child, index) { child.style.transition = 'none' });
+                                }, 250);
+                            }
                         }
 
                         scope.nextSlide = function(slideOptions) {
@@ -573,7 +583,7 @@
                                     destination = currentSlides.length - 1;
                                 }
 
-                                goToSlide(destination);
+                                goToSlide(destination, { animate: options.transitionType != 'cssSlide' });
                                 if(iAttributes.rnCarouselOnSwipe)
                                     $parse(iAttributes.rnCarouselOnSwipe)(scope, { '$event': { destination: destination } })
                             } else {

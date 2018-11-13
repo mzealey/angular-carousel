@@ -1,6 +1,6 @@
 /**
  * Angular Carousel - Mobile friendly touch carousel for AngularJS
- * @version v1.1.0 - 2018-09-21
+ * @version v1.1.0 - 2018-11-13
  * @link http://revolunet.github.com/angular-carousel
  * @author Julien Bouquillon <julien@revolunet.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -341,8 +341,18 @@ angular.module('angular-carousel').run(['$templateCache', function($templateCach
                                 rnCarouselOffset(scope, { offset: offset });
 
                             angular.forEach(getSlidesDOM(), function(child, index) {
-                                child.style.cssText = createStyleString(computeCarouselSlideStyle(index, x, options.transitionType));
+                                var styles = computeCarouselSlideStyle(index, x, options.transitionType)
+                                if( !swipeMoved && options.transitionType == 'cssSlide' )
+                                    styles.transition = 'transform linear 200ms';
+
+                                child.style.cssText = createStyleString(styles);
                             });
+
+                            if( !swipeMoved && options.transitionType == 'cssSlide' ) {
+                                window.setTimeout(function() {
+                                    angular.forEach(getSlidesDOM(), function(child, index) { child.style.transition = 'none' });
+                                }, 250);
+                            }
                         }
 
                         scope.nextSlide = function(slideOptions) {
@@ -652,7 +662,7 @@ angular.module('angular-carousel').run(['$templateCache', function($templateCach
                                     destination = currentSlides.length - 1;
                                 }
 
-                                goToSlide(destination);
+                                goToSlide(destination, { animate: options.transitionType != 'cssSlide' });
                                 if(iAttributes.rnCarouselOnSwipe)
                                     $parse(iAttributes.rnCarouselOnSwipe)(scope, { '$event': { destination: destination } })
                             } else {
